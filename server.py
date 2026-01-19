@@ -390,18 +390,32 @@ class SvgHandler(BaseHTTPRequestHandler):
         refreshButton.addEventListener("click", triggerRefresh);
       }}
       setInterval(triggerRefresh, 30000);
-      document.querySelectorAll(".more").forEach((section) => {{
+      const toggleSection = (section) => {{
         const button = section.querySelector(".more-toggle");
         const list = section.querySelector(".more-list");
         if (!button || !list) return;
-        button.addEventListener("click", () => {{
-          const isOpen = section.classList.toggle("open");
-          button.setAttribute("aria-expanded", String(isOpen));
-          if (isOpen) {{
-            list.style.maxHeight = list.scrollHeight + "px";
-          }} else {{
-            list.style.maxHeight = "0px";
-          }}
+        const isOpen = section.classList.toggle("open");
+        button.setAttribute("aria-expanded", String(isOpen));
+        if (isOpen) {{
+          list.style.maxHeight = list.scrollHeight + "px";
+        }} else {{
+          list.style.maxHeight = "0px";
+        }}
+      }};
+      document.querySelectorAll(".more").forEach((section) => {{
+        const button = section.querySelector(".more-toggle");
+        if (!button) return;
+        button.addEventListener("click", (event) => {{
+          event.stopPropagation();
+          toggleSection(section);
+        }});
+      }});
+      document.querySelectorAll(".card").forEach((card) => {{
+        const section = card.querySelector(".more");
+        if (!section) return;
+        card.addEventListener("click", (event) => {{
+          if (event.target.closest(".more-toggle")) return;
+          toggleSection(section);
         }});
       }});
     </script>
