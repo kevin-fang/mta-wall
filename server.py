@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
+import os
+
 from timetable_svg import ROUTE_COLORS, get_schedule, generate_svg_string
 
 
@@ -396,7 +398,7 @@ class SvgHandler(BaseHTTPRequestHandler):
         return
 
 
-def run_server(host: str = "0.0.0.0", port: int = 8000) -> None:
+def run_server(host: str = "0.0.0.0", port: int = 8100) -> None:
     server = HTTPServer((host, port), SvgHandler)
     print(f"Serving on http://{host}:{port}")
     try:
@@ -406,4 +408,6 @@ def run_server(host: str = "0.0.0.0", port: int = 8000) -> None:
 
 
 if __name__ == "__main__":
-    run_server()
+    env_port = os.getenv("PORT")
+    port = int(env_port) if env_port else 8100
+    run_server(port=port)

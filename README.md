@@ -24,7 +24,7 @@ pip install requests gtfs-realtime-bindings
 python server.py
 ```
 
-By default it binds to `0.0.0.0:8000`.
+By default it binds to `0.0.0.0:8100` (override with `PORT`).
 
 Endpoints:
 - `/` or `/mobile` - mobile HTML page

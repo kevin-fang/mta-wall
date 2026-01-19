@@ -11,6 +11,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 ENV PYTHONUNBUFFERED=1
 
-EXPOSE 8000
+EXPOSE 8100
 
 CMD ["python", "server.py"]
