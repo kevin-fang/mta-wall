@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import os
-
 from timetable_svg import ROUTE_COLORS, get_schedule, generate_svg_string
 
 
@@ -18,8 +16,7 @@ class SvgHandler(BaseHTTPRequestHandler):
         self.send_error(404, "Not found")
 
     def _handle_svg(self) -> None:
-        api_key = os.getenv("MTA_API_KEY")
-        svg = generate_svg_string(api_key=api_key)
+        svg = generate_svg_string()
         payload = svg.encode("utf-8")
 
         self.send_response(200)
@@ -29,8 +26,7 @@ class SvgHandler(BaseHTTPRequestHandler):
         self.wfile.write(payload)
 
     def _handle_mobile(self) -> None:
-        api_key = os.getenv("MTA_API_KEY")
-        rows, now = get_schedule(api_key=api_key, limit=None)
+        rows, now = get_schedule(limit=None)
 
         def esc(text: str) -> str:
             return (

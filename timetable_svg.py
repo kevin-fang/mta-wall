@@ -2,7 +2,6 @@
 
 import datetime as dt
 from collections import defaultdict
-import os
 from typing import Dict, Iterable, List, Tuple
 
 import requests
@@ -49,9 +48,8 @@ ROUTE_COLORS = {
 }
 
 
-def fetch_feed(url: str, api_key: str | None) -> gtfs_realtime_pb2.FeedMessage:
-    headers = {"x-api-key": api_key} if api_key else {}
-    resp = requests.get(url, headers=headers, timeout=10)
+def fetch_feed(url: str) -> gtfs_realtime_pb2.FeedMessage:
+    resp = requests.get(url, timeout=10)
     resp.raise_for_status()
     feed = gtfs_realtime_pb2.FeedMessage()
     feed.ParseFromString(resp.content)
@@ -194,36 +192,32 @@ def render_svg(rows: List[Dict[str, object]], now: dt.datetime) -> str:
 
 def generate_svg(
     out_path: str = "timetable.svg",
-    api_key: str | None = None,
     stop_map: Dict[str, str] | None = None,
 ) -> str:
-    svg = generate_svg_string(api_key=api_key, stop_map=stop_map)
+    svg = generate_svg_string(stop_map=stop_map)
     with open(out_path, "w", encoding="utf-8") as fh:
         fh.write(svg)
     return out_path
 
 
 def get_schedule(
-    api_key: str | None = None,
     stop_map: Dict[str, str] | None = None,
     limit: int | None = None,
 ) -> Tuple[List[Dict[str, object]], dt.datetime]:
     stop_map = stop_map or MY_STOPS
     now = dt.datetime.now()
-    feeds = [fetch_feed(url, api_key) for url in FEED_URLS]
+    feeds = [fetch_feed(url) for url in FEED_URLS]
     rows = build_schedule(feeds, stop_map, now, limit=limit)
     return rows, now
 
 
 def generate_svg_string(
-    api_key: str | None = None,
     stop_map: Dict[str, str] | None = None,
 ) -> str:
-    rows, now = get_schedule(api_key=api_key, stop_map=stop_map, limit=2)
+    rows, now = get_schedule(stop_map=stop_map, limit=2)
     return render_svg(rows, now)
 
 
 if __name__ == "__main__":
-    key = os.getenv("MTA_API_KEY")
-    output = generate_svg(api_key=key)
+    output = generate_svg()
     print(f"Wrote {output}")

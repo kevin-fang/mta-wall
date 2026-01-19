@@ -19,11 +19,6 @@ Install dependencies:
 pip install requests gtfs-realtime-bindings
 ```
 
-If your MTA feed access requires an API key:
-```bash
-export MTA_API_KEY="your_key_here"
-```
-
 ## Run the server
 ```bash
 python server.py
