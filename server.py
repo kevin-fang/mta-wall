@@ -339,7 +339,7 @@ class SvgHandler(BaseHTTPRequestHandler):
       .card:nth-child(8) {{ animation-delay: 320ms; }}
     </style>
   </head>
-  <body>
+  <body data-theme="light">
     <header>
       <div class="title">Jackson Park MTA Arrivals</div>
       <div class="actions">
@@ -350,7 +350,7 @@ class SvgHandler(BaseHTTPRequestHandler):
             <polyline points="21 3 21 9 15 9" />
           </svg>
         </button>
-        <div class="asof">As of {now.strftime("%a %b %d %H:%M")}</div>
+        <div class="asof">As of {now.strftime("%a %b %d %H:%M")} ET</div>
       </div>
     </header>
     <main>
@@ -365,12 +365,11 @@ class SvgHandler(BaseHTTPRequestHandler):
       const refreshButton = document.querySelector(".refresh");
       const themeButton = document.querySelector(".theme-toggle");
       const storedTheme = localStorage.getItem("theme");
-      if (storedTheme) {{
-        document.body.setAttribute("data-theme", storedTheme);
-        if (themeButton) {{
-          themeButton.setAttribute("aria-pressed", storedTheme === "dark" ? "true" : "false");
-          themeButton.textContent = storedTheme === "dark" ? "Light" : "Dark";
-        }}
+      const initialTheme = storedTheme || "light";
+      document.body.setAttribute("data-theme", initialTheme);
+      if (themeButton) {{
+        themeButton.setAttribute("aria-pressed", initialTheme === "dark" ? "true" : "false");
+        themeButton.textContent = initialTheme === "dark" ? "Light" : "Dark";
       }}
       if (themeButton) {{
         themeButton.addEventListener("click", () => {{

@@ -3,6 +3,7 @@
 import datetime as dt
 from collections import defaultdict
 from typing import Dict, Iterable, List, Tuple
+from zoneinfo import ZoneInfo
 
 import requests
 from google.transit import gtfs_realtime_pb2
@@ -13,6 +14,7 @@ BDFM_URL = "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-b
 NUMBERTRAINS_URL = "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs"
 
 FEED_URLS = [ACE_URL, NQRW_URL, BDFM_URL, NUMBERTRAINS_URL]
+ET_TZ = ZoneInfo("America/New_York")
 
 # Stop IDs without direction suffix.
 MY_STOPS = {
@@ -83,7 +85,7 @@ def iter_arrivals(
                 "route": route,
                 "stop_name": stop_map[stop_key],
                 "direction": direction,
-                "arrival_time": dt.datetime.fromtimestamp(ts),
+                "arrival_time": dt.datetime.fromtimestamp(ts, ET_TZ),
             }
 
 
@@ -154,7 +156,7 @@ def render_svg(rows: List[Dict[str, object]], now: dt.datetime) -> str:
         f'<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 {width} {height}" preserveAspectRatio="xMidYMid meet">',
         f'<rect width="{width}" height="{height}" fill="{bg}"/>',
         f'<text x="{margin}" y="{margin + 42}" fill="{header}" font-family="{font}" font-size="58" font-weight="600" letter-spacing="1">MTA ARRIVALS</text>',
-        f'<text x="{width - margin}" y="{margin + 42}" fill="{muted}" font-family="{font}" font-size="20" text-anchor="end">As of {now.strftime("%a %b %d %H:%M")}</text>',
+        f'<text x="{width - margin}" y="{margin + 42}" fill="{muted}" font-family="{font}" font-size="20" text-anchor="end">As of {now.strftime("%a %b %d %H:%M")} ET</text>',
     ]
 
     for i, row in enumerate(rows):
@@ -205,7 +207,7 @@ def get_schedule(
     limit: int | None = None,
 ) -> Tuple[List[Dict[str, object]], dt.datetime]:
     stop_map = stop_map or MY_STOPS
-    now = dt.datetime.now()
+    now = dt.datetime.now(ET_TZ)
     feeds = [fetch_feed(url) for url in FEED_URLS]
     rows = build_schedule(feeds, stop_map, now, limit=limit)
     return rows, now
