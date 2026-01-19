@@ -14,6 +14,18 @@ class SvgHandler(BaseHTTPRequestHandler):
         if self.path in ("/timetable.svg", "/svg"):
             self._handle_svg()
             return
+        if self.path == "/manifest.json":
+            self._serve_file("manifest.json", "application/manifest+json; charset=utf-8")
+            return
+        if self.path == "/sw.js":
+            self._serve_file("sw.js", "application/javascript; charset=utf-8")
+            return
+        if self.path == "/icon.svg":
+            self._serve_file("icon.svg", "image/svg+xml; charset=utf-8")
+            return
+        if self.path == "/favicon.ico":
+            self._serve_file("favicon.ico", "image/x-icon")
+            return
 
         self.send_error(404, "Not found")
 
@@ -86,6 +98,10 @@ class SvgHandler(BaseHTTPRequestHandler):
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Jackson Park MTA Arrivals</title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/icon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta name="theme-color" content="#111111" />
     <style>
       :root {{
         color-scheme: light dark;
@@ -341,6 +357,11 @@ class SvgHandler(BaseHTTPRequestHandler):
       {cards_html}
     </main>
     <script>
+      if ("serviceWorker" in navigator) {{
+        window.addEventListener("load", () => {{
+          navigator.serviceWorker.register("/sw.js");
+        }});
+      }}
       const refreshButton = document.querySelector(".refresh");
       const themeButton = document.querySelector(".theme-toggle");
       const storedTheme = localStorage.getItem("theme");
@@ -393,6 +414,19 @@ class SvgHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(payload)))
         self.end_headers()
         self.wfile.write(payload)
+
+    def _serve_file(self, path: str, content_type: str) -> None:
+        try:
+            with open(path, "rb") as handle:
+                data = handle.read()
+        except OSError:
+            self.send_error(404, "Not found")
+            return
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
 
     def log_message(self, format: str, *args) -> None:
         return
