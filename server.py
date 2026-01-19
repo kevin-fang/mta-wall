@@ -65,8 +65,7 @@ class SvgHandler(BaseHTTPRequestHandler):
           </ul>
         </div>
 """
-            cards.append(
-                f"""
+            cards.append(f"""
       <article class="card">
         <div class="badge" style="background:{color}">{esc(route)}</div>
         <div class="meta">
@@ -78,10 +77,11 @@ class SvgHandler(BaseHTTPRequestHandler):
         </div>
         {extra_html}
       </article>
-"""
-            )
+""")
 
-        cards_html = "".join(cards) if cards else '<div class="empty">No arrivals found.</div>'
+        cards_html = (
+            "".join(cards) if cards else '<div class="empty">No arrivals found.</div>'
+        )
         html = f"""<!doctype html>
 <html lang="en">
   <head>

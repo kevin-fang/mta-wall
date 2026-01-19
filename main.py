@@ -15,7 +15,6 @@ NUMBERTRAINS_URL = "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%
 urls = [ACE_URL, NQRW_URL, BDFM_URL, NUMBERTRAINS_URL]
 
 
-
 queens_plaza = "G21"
 queensboro_plaza = "718"
 queensboro_plaza_nw = "R09"
@@ -54,7 +53,14 @@ for url in urls:
             if sid[:-1] not in my_stops:
                 continue
 
-            train_map[route].append({"stop_name": my_stops[sid[:-1]], "train": sid, "is_uptown": "N" in sid, "arrival_time": arr_time})
+            train_map[route].append(
+                {
+                    "stop_name": my_stops[sid[:-1]],
+                    "train": sid,
+                    "is_uptown": "N" in sid,
+                    "arrival_time": arr_time,
+                }
+            )
 
     time = dt.datetime.now()
     for train in train_map:
@@ -65,6 +71,10 @@ for url in urls:
             stop = stop["stop_name"]
 
             if "N" in sid and time < arr:
-                print(f"Stop: {stop}, Train: {train}, uptown, arrival time: {arr.strftime("%H:%M:%S")} (in {arr - time}")
+                print(
+                    f"Stop: {stop}, Train: {train}, uptown, arrival time: {arr.strftime("%H:%M:%S")} (in {arr - time}"
+                )
             elif time < arr:
-                print(f"Stop: {stop}, Train: {train}, downtown, arrival time: {arr.strftime("%H:%M:%S")} (in {arr - time})")
+                print(
+                    f"Stop: {stop}, Train: {train}, downtown, arrival time: {arr.strftime("%H:%M:%S")} (in {arr - time})"
+                )
